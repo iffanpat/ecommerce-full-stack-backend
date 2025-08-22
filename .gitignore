@@ -1,1 +1,6 @@
--e "bin/\n*.log\n" 
+bin/
+*.log
+*.out
+*.test
+coverage.*
+.env
