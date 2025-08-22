@@ -4,9 +4,10 @@ import (
 	"log"
 	"os"
 
+	"ecommerce/internal/controllers"
 	"ecommerce/internal/db"
-	"ecommerce/internal/handlers"
-	"ecommerce/internal/services"
+	"ecommerce/internal/repositories"
+	"ecommerce/internal/routes"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -26,15 +27,15 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// Initialize services
-	productService := services.NewProductService(database)
-	cartService := services.NewCartService(database)
-	orderService := services.NewOrderService(database)
+	// Initialize repositories (Data Access Layer)
+	productRepo := repositories.NewProductRepository(database)
+	cartRepo := repositories.NewCartRepository(database)
+	orderRepo := repositories.NewOrderRepository(database)
 
-	// Initialize handlers
-	productHandler := handlers.NewProductHandler(productService)
-	cartHandler := handlers.NewCartHandler(cartService)
-	orderHandler := handlers.NewOrderHandler(orderService)
+	// Initialize controllers (MVC Controllers)
+	productController := controllers.NewProductController(productRepo)
+	cartController := controllers.NewCartController(cartRepo)
+	orderController := controllers.NewOrderController(orderRepo)
 
 	// Setup router
 	r := gin.Default()
@@ -44,31 +45,21 @@ func main() {
 		AllowHeaders: []string{"Content-Type", "X-Admin-Secret"},
 	}))
 
-	// Health check
-	r.GET("/health", func(c *gin.Context) {
-		c.JSON(200, gin.H{"ok": true})
-	})
-
-	// Product routes
-	r.GET("/products", productHandler.ListProducts)
-	r.GET("/products/:id", productHandler.GetProduct)
-	r.PUT("/products/:id/stock", productHandler.UpdateStock)
-
-	// Cart routes
-	r.POST("/carts", cartHandler.UpsertCart)
-	r.GET("/carts/:cid/items", cartHandler.ListItems)
-	r.POST("/carts/:cid/items", cartHandler.AddItem)
-	r.PATCH("/carts/:cid/items/:iid", cartHandler.UpdateItem)
-	r.DELETE("/carts/:cid/items/:iid", cartHandler.RemoveItem)
-
-	// Order routes
-	r.POST("/checkout", orderHandler.Checkout)
-	r.GET("/orders", orderHandler.ListOrders)
+	// Setup routes using MVC pattern
+	routes.SetupRoutes(r, productController, cartController, orderController)
 
 	// Start server
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
 	}
+
+	log.Printf("🚀 Server starting on port %s", port)
+	log.Printf("📁 Using MVC architecture pattern")
+	log.Printf("🔗 API endpoints available at:")
+	log.Printf("   - Health check: http://localhost:%s/health", port)
+	log.Printf("   - Products: http://localhost:%s/products", port)
+	log.Printf("   - New API v1: http://localhost:%s/api/v1/", port)
+
 	r.Run(":" + port)
 }
