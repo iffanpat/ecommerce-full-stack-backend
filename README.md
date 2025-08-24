@@ -1,16 +1,18 @@
-# E-commerce Backend API
+# E-commerce Backend API (Products Only)
 
 Go-based e-commerce backend API ที่ใช้ Gin framework, PostgreSQL และ **MVC Architecture Pattern**
+
+**🎯 Learning Focus:** โปรเจคนี้ถูกลดให้เหลือแต่ **Product API** เพื่อให้เรียนรู้ MVC pattern ได้ง่ายขึ้น
 
 ## 🏗️ Architecture
 
 โปรเจคนี้ใช้ **MVC (Model-View-Controller)** pattern เพื่อให้โค้ดมีโครงสร้างที่ชัดเจน:
 
-- **Model** (`internal/models/`) - โครงสร้างข้อมูล
-- **View** (`internal/views/`) - จัดรูปแบบ Response
-- **Controller** (`internal/controllers/`) - จัดการ HTTP Requests
-- **Repository** (`internal/repositories/`) - Data Access Layer
-- **Routes** (`internal/routes/`) - API Routing
+- **Model** (`internal/models/product.go`) - โครงสร้างข้อมูลสินค้า
+- **View** (`internal/views/product_view.go`) - จัดรูปแบบ Response
+- **Controller** (`internal/controllers/product_controller.go`) - จัดการ HTTP Requests
+- **Repository** (`internal/repositories/product_repository.go`) - Data Access Layer
+- **Routes** (`internal/routes/routes.go`) - API Routing
 
 📖 ดูรายละเอียดเพิ่มเติมใน [MVC_ARCHITECTURE.md](MVC_ARCHITECTURE.md)
 
@@ -105,29 +107,35 @@ curl http://localhost:8080/products
 ### 🔗 Legacy API (Backward Compatible)
 - `GET /products` - ดูสินค้าทั้งหมด
 - `GET /products/:id` - ดูสินค้าตาม ID
-- `PUT /products/:id/stock` - อัปเดตสต็อกสินค้า
-- `POST /carts` - สร้างตะกร้าสินค้า
-- `GET /carts/:cid/items` - ดูสินค้าในตะกร้า
-- `POST /carts/:cid/items` - เพิ่มสินค้าในตะกร้า
-- `PATCH /carts/:cid/items/:iid` - อัปเดตจำนวนสินค้าในตะกร้า
-- `DELETE /carts/:cid/items/:iid` - ลบสินค้าจากตะกร้า
-- `POST /checkout` - สั่งซื้อสินค้า
-- `GET /orders` - ดูรายการสั่งซื้อ
+- `PUT /products/:id/stock` - อัปเดตสต็อกสินค้า (ต้องมี X-Admin-Secret header)
 
 ### ✨ New API v1 (Recommended)
 - `GET /api/v1/products/` - ดูสินค้าทั้งหมด
 - `GET /api/v1/products/:id` - ดูสินค้าตาม ID
-- `PUT /api/v1/products/:id/stock` - อัปเดตสต็อกสินค้า
-- `POST /api/v1/carts/` - สร้างตะกร้าสินค้า
-- `GET /api/v1/carts/:cid/items` - ดูสินค้าในตะกร้า
-- `POST /api/v1/carts/:cid/items` - เพิ่มสินค้าในตะกร้า
-- `PATCH /api/v1/carts/:cid/items/:iid` - อัปเดตจำนวนสินค้าในตะกร้า
-- `DELETE /api/v1/carts/:cid/items/:iid` - ลบสินค้าจากตะกร้า
-- `POST /api/v1/orders/checkout` - สั่งซื้อสินค้า
-- `GET /api/v1/orders/` - ดูรายการสั่งซื้อ
+- `PUT /api/v1/products/:id/stock` - อัปเดตสต็อกสินค้า (ต้องมี X-Admin-Secret header)
 
 ### 🏥 Health Check
 - `GET /health` - ตรวจสอบสถานะเซิร์ฟเวอร์
+
+## ตัวอย่างการใช้งาน
+
+### ดูสินค้าทั้งหมด
+```bash
+curl http://localhost:8080/api/v1/products/
+```
+
+### ดูสินค้าตาม ID
+```bash
+curl http://localhost:8080/api/v1/products/1
+```
+
+### อัปเดตสต็อกสินค้า (ต้องตั้งค่า ADMIN_SECRET ใน .env)
+```bash
+curl -X PUT http://localhost:8080/api/v1/products/1/stock \
+  -H "Content-Type: application/json" \
+  -H "X-Admin-Secret: your_admin_secret" \
+  -d '{"stock": 100}'
+```
 
 ## การแก้ไขปัญหาที่พบบ่อย
 
@@ -141,4 +149,15 @@ curl http://localhost:8080/products
 - หรือหยุดโปรเซสที่ใช้ port 8080
 
 ### 3. Module Not Found
-- รัน `go mod tidy` เพื่อดาวน์โหลด dependencies 
+- รัน `go mod tidy` เพื่อดาวน์โหลด dependencies
+
+## 🎓 Learning Path
+
+เมื่อเข้าใจ Product API แล้ว สามารถเพิ่ม APIs อื่นได้:
+
+1. **Cart API** - จัดการตะกร้าสินค้า
+2. **Order API** - จัดการคำสั่งซื้อ  
+3. **User API** - จัดการผู้ใช้และ Authentication
+4. **Payment API** - จัดการการชำระเงิน
+
+ไฟล์ที่ถูกลบออกได้ถูกสำรองไว้ในโฟลเดอร์ `backup_removed_apis/` 

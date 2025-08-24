@@ -29,13 +29,9 @@ func main() {
 
 	// Initialize repositories (Data Access Layer)
 	productRepo := repositories.NewProductRepository(database)
-	cartRepo := repositories.NewCartRepository(database)
-	orderRepo := repositories.NewOrderRepository(database)
 
 	// Initialize controllers (MVC Controllers)
 	productController := controllers.NewProductController(productRepo)
-	cartController := controllers.NewCartController(cartRepo)
-	orderController := controllers.NewOrderController(orderRepo)
 
 	// Setup router
 	r := gin.Default()
@@ -46,7 +42,7 @@ func main() {
 	}))
 
 	// Setup routes using MVC pattern
-	routes.SetupRoutes(r, productController, cartController, orderController)
+	routes.SetupRoutes(r, productController)
 
 	// Start server
 	port := os.Getenv("PORT")
@@ -56,10 +52,11 @@ func main() {
 
 	log.Printf("🚀 Server starting on port %s", port)
 	log.Printf("📁 Using MVC architecture pattern")
-	log.Printf("🔗 API endpoints available at:")
+	log.Printf("🛍️  Available APIs: Products only")
+	log.Printf("🔗 API endpoints:")
 	log.Printf("   - Health check: http://localhost:%s/health", port)
-	log.Printf("   - Products: http://localhost:%s/products", port)
-	log.Printf("   - New API v1: http://localhost:%s/api/v1/", port)
+	log.Printf("   - Products (Legacy): http://localhost:%s/products", port)
+	log.Printf("   - Products (v1): http://localhost:%s/api/v1/products/", port)
 
 	r.Run(":" + port)
 }
