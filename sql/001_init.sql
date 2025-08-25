@@ -18,13 +18,13 @@ CREATE TABLE IF NOT EXISTS product_images (
 );
 
 -- Seed Products Data
-INSERT INTO products (sku, name, description, price_cents, stock)
+INSERT INTO products (id,sku, name, description, price_cents, stock)
 VALUES
- ('SKU-001','Basic Tee','Cotton tee', 19900, 50),
- ('SKU-002','Hoodie','Cozy hoodie', 59900, 20),
- ('SKU-003','Cap','Classic cap', 14900, 35),
- ('SKU-004','Jeans','Denim jeans', 79900, 15),
- ('SKU-005','Sneakers','Casual sneakers', 129900, 25)
+ (1,'SKU-001','Basic Tee','Cotton tee', 19900, 50),
+ (2,'SKU-002','Hoodie','Cozy hoodie', 59900, 20),
+ (3,'SKU-003','Cap','Classic cap', 14900, 35),
+ (4,'SKU-004','Jeans','Denim jeans', 79900, 15),
+ (5,'SKU-005','Sneakers','Casual sneakers', 129900, 25)
 ON CONFLICT (sku) DO NOTHING;
 
 -- Seed Product Images
